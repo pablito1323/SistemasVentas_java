@@ -4,6 +4,8 @@
     Author     : pablito
 --%>
 
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -62,12 +64,10 @@
                                     <input type="text" name="precioproducto" class="form-control" placeholder="$ 0000.00" value="${productoseleccionado.getPrecio()}">
                                 </div>
                                 <div class="col-md-8 d-flex form-group">
-                                    <input type="number" value="1" name="cantidadproducto"
-                                           class="form-control" placeholder="Cantidad">
+                                    <input type="number" value="1" name="cantidadproducto" class="form-control" placeholder="Cantidad">
                                 </div>
                             </div>
-                            <input type="submit" name="accion" value="AgregarProducto" class="btn
-                                   btn-outline-primary col text-center">
+                            <input type="submit" name="accion" value="AgregarProducto" class="btn btn-outline-primary col text-center">
                             <div class="row"></div>
                         </form>
                     </div>
@@ -78,7 +78,7 @@
                     <div class="card-header">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Numero de factura</label>
-                            <input class="form-control col-md-4" type="text" name="txtnumerofactura">
+                            <input class="form-control col-md-4" type="text" name="txtnumerofactura" value="${numerofactura}">
                         </div>
 
                     </div>
@@ -96,7 +96,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                           
+                      
                             <c:forEach var="lista" items="${listaventas}">
                                 <tr>
                                     <th scope="row" style="width: 30px;">${lista.getItem()}</th>
@@ -117,15 +117,12 @@
                     </div>
                     <div class="card-footer d-flex">
                         <div class="col-md-8 text-center">
-                            <a class="btn btn-success" onclick="print()" href="Controlador?
-                               menu=Ventas&accion=GenerarVenta">Generar Venta</a>
-                            <a class="btn btn-danger" href="Controlador?
-                               menu=Ventas&accion=NuevaVenta">Nueva Venta</a>
+                            <a class="btn btn-success" onclick="print()" href="Controlador?menu=Ventas&accion=GenerarVenta">Generar Venta</a>
+                            <a class="btn btn-danger" href="Controlador?menu=Ventas&accion=NuevaVenta">Nueva Venta</a>
 
                         </div>
                         <div class="col-md-4">
-                            <input type=text" name="txttotalapagar" class="form-control"
-                                   placeholder="$ 00.000.00" disabled="disabled">
+                            <input type=text" name="txttotalapagar" class="form-control" placeholder="$ 00.000.00" disabled="disabled" value="${totalapagar}">
                         </div>
                     </div>
 

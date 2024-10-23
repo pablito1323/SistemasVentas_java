@@ -9,10 +9,10 @@ import Modelos.ProductoDAO;
 import Modelos.Usuario;
 import Modelos.UsuarioDAO;
 import Modelos.Venta;
+import Modelos.VentaDAO;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -29,19 +29,19 @@ public class Controlador extends HttpServlet {
 
     Usuario usuario = new Usuario();
     UsuarioDAO usuarioDAO = new UsuarioDAO();
-
     int idUsuario;
-
     Producto producto = new Producto();
     ProductoDAO productoDAO = new ProductoDAO();
-
     Venta venta = new Venta();
-    int item, codProducto,precio,cantidad,totalapagar;
+    int item, codProducto, precio, cantidad, totalapagar;
     String descripcion;
     double subtotal;
-    lista<Venta>listaVentas = new ArrayList();
-   
- 
+    List<Venta> listaVentas = new ArrayList();
+    VentaDAO ventaDAO = new VentaDAO();
+    int numfac = 0;
+    NumberFormat formatoNumero1;
+    String total1;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -133,12 +133,17 @@ public class Controlador extends HttpServlet {
                     request.setAttribute("cliente", usuario);
                     break;
                 case "BuscarProducto":
-                    System.err.print("Ingreso");
                     int codigoProducto = Integer.parseInt(request.getParameter("codigoproducto"));
                     producto = productoDAO.ConsultaPorCodigo(codigoProducto);
-                    System.out.print("" + producto.getNombreProducto());
                     request.setAttribute("productoseleccionado", producto);
-
+                    request.setAttribute("cliente", usuario);
+                    for (int i = 0; i < listaVentas.size(); i++) {
+                        totalapagar += listaVentas.get(i).getSubtotal();
+                    }
+                    formatoNumero1 = NumberFormat.getNumberInstance();
+                    total1 = formatoNumero1.format(totalapagar);
+                    request.setAttribute("totalapagar", total1);
+                    request.setAttribute("listaventas", listaVentas);
                     break;
                 case "AgregarProducto":
                     totalapagar = 0;
@@ -160,12 +165,39 @@ public class Controlador extends HttpServlet {
                     for (int i = 0; i < listaVentas.size(); i++) {
                         totalapagar += listaVentas.get(i).getSubtotal();
                     }
-                    NumberFormat formatoNumero1 = NumberFormat.getNumberInstance();
-                    String total1 = formatoNumero1.format(totalapagar);
+                    formatoNumero1 = NumberFormat.getNumberInstance();
+                    total1 = formatoNumero1.format(totalapagar);
                     request.setAttribute("totalapagar", total1);
                     break;
 
+                case "GenerarVenta":
+                    venta.setIdCliente(usuario.getId());
+                    venta.setIdEmpleado(1);
+                    venta.setNumeroComprobante("" + numfac);
+                    venta.setFecha("2020-10-21");
+                    venta.setMonto(totalapagar);
+                    venta.setEstado("1");
+                    ventaDAO.RegistrarVenta(venta);
+                    int idv = ventaDAO.ObtenerMaximoIdVentas();
+                    for (int i = 0; i < listaVentas.size(); i++) {
+                        venta = new Venta();
+                        venta.setIdVenta(idv);
+                        venta.setIdProducto(listaVentas.get(i).getIdProducto());
+                        venta.setCantidad(listaVentas.get(i).getCantidad());
+                        venta.setPrecio(listaVentas.get(i).getPrecio());
+                        ventaDAO.GuardarDetalleVenta(venta);
+                    }
+                    break;
+
                 default:
+                    String factura = ventaDAO.ObtenerNumeroDeFactura();
+                    System.err.println("nume factura" + factura);
+                    if (factura == null) {
+                        factura = "1";
+                    } else {
+                        numfac = Integer.parseInt(factura) + 1;
+                    }
+                    request.setAttribute("numerofactura", numfac);
 
             }
             request.getRequestDispatcher("Ventas.jsp").forward(request, response);

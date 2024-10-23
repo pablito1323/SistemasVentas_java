@@ -49,7 +49,7 @@ public class ProductoDAO {
     public int Agregar(Producto producto) {
         int r = 0;
         con = cn.Conexion();
-        String sentencia = "INSERT INTO productos (nombreproducto,descripcionproducto,unidad,preciod) VALUES(?,?,?,?)";
+        String sentencia = "INSERT INTO productos (nombreproducto,descripcionproducto,unidad,precio) VALUES(?,?,?,?)";
         try {
             ps = con.prepareStatement(sentencia);
             ps.setString(1, producto.getNombreProducto());
